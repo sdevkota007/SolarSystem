@@ -74,14 +74,14 @@ def main():
     glClearColor(0.0, 0.4, 0.5, 1.0)
     glEnable(GL_DEPTH_TEST)
 
-
-    # view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -900.0]))
-    # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
-    # model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-
-    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -4.0]))
-    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
     model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
+    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -900.0]))
+    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
+
+    # model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
+    # view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -4.0]))
+    # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 60.0)
+
     # # ---------------create normalMatrix-----------------
     # modelView = numpy.matmul(view, model)
     # modelView33 = modelView[0:-1, 0:-1]
@@ -129,6 +129,7 @@ def main():
         rot_x = pyrr.Matrix44.from_x_rotation(0.5 * glfw.get_time() )
         rot_y = pyrr.Matrix44.from_y_rotation(0.8 * glfw.get_time() )
 
+
         # identity_mat = numpy.identity(4)
         # rot_x = identity_mat
         # rot_y = identity_mat
@@ -143,7 +144,7 @@ def main():
         glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
 
         glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
-
+        # glutWireSphere(2, 10, 10)
 
 
         glfw.swap_buffers(window)
