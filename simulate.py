@@ -30,7 +30,7 @@ def main():
     glfw.set_window_size_callback(window, window_resize)
 
     obj = ObjLoader()
-    obj.load_model("objects/earth.obj")
+    obj.load_model("objects/cube.obj")
 
     texture_offset = len(obj.vertex_index)*12
     normal_offset = (texture_offset + len(obj.texture_index)*8)
@@ -74,13 +74,13 @@ def main():
     glClearColor(0.0, 0.4, 0.5, 1.0)
     glEnable(GL_DEPTH_TEST)
 
-    model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -900.0]))
-    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
-
     # model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-    # view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -4.0]))
-    # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 60.0)
+    # view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -900.0]))
+    # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
+
+    model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
+    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -4.0]))
+    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 60.0)
 
     # # ---------------create normalMatrix-----------------
     # modelView = numpy.matmul(view, model)
