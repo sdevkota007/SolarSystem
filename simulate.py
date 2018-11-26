@@ -116,8 +116,9 @@ def main():
 
         #************************************SUN****************************************
         glBindTexture(GL_TEXTURE_2D, sun_tex)
+        rotation_speed = time * 0.002
         model_pos = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 1.0, 0.0]))
-        rot_x = matrix44.create_from_y_rotation(time * 0.002)
+        rot_x = matrix44.create_from_y_rotation(rotation_speed)
         model = matrix44.multiply(rot_x, model_pos)
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
 
