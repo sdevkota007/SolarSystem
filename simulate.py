@@ -4,6 +4,9 @@ from OpenGL.GL import *
 import ShaderLoader
 import numpy
 import pyrr
+from pyrr import matrix44, vector3
+import TextureLoader
+import math
 
 from PIL import Image
 from ObjLoader import *
@@ -54,31 +57,17 @@ def main():
     glVertexAttribPointer(normals, 3, GL_FLOAT, GL_FALSE, obj.model.itemsize * 3, ctypes.c_void_p(normal_offset))
     glEnableVertexAttribArray(normals)
 
-    texture = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, texture)
-    # Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-    # Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    # load image
-    image = Image.open("objects/earth.jpg")
-    flipped_image = image.transpose(Image.FLIP_TOP_BOTTOM)
-    img_data = numpy.array(list(flipped_image.getdata()), numpy.uint8)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data)
-    glEnable(GL_TEXTURE_2D)
+    sun_tex = TextureLoader.load_texture("objects/sun/sun.jpg")
+    earth_tex = TextureLoader.load_texture("objects/earth/earth.jpg")
 
+    glEnable(GL_TEXTURE_2D)
     glUseProgram(shader)
 
     glClearColor(0.0, 0.4, 0.5, 1.0)
     glEnable(GL_DEPTH_TEST)
 
-    # model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-    # view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -900.0]))
-    # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
 
-    model = pyrr.matrix44.create_from_translation(pyrr.Vector3([10.0, 1.0, 0.0]))
+
     view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -20.0]))
     projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 100.0)
 
@@ -95,9 +84,8 @@ def main():
 
     glUniformMatrix4fv(view_loc, 1, GL_FALSE, view)
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, projection)
-    glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
 
-    transform_loc = glGetUniformLocation(shader, "transform")
+
 
     Global_ambient_loc = glGetUniformLocation(shader, "Global_ambient")
     Light_ambient_loc = glGetUniformLocation(shader, "Light_ambient")
@@ -119,32 +107,58 @@ def main():
     glUniform4f(Material_specular_loc, 1.0, 1.0, 1.0, 1.0)
     glUniform1f(Material_shininess_loc, .95)
 
-
+    theta = 0
     while not glfw.window_should_close(window):
         glfw.poll_events()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        time = glfw.get_time()
 
+        #************************************SUN****************************************
+        glBindTexture(GL_TEXTURE_2D, sun_tex)
+        model_pos = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 1.0, 0.0]))
+        rot_x = matrix44.create_from_y_rotation(time * 0.002)
+        model = matrix44.multiply(rot_x, model_pos)
+        glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
 
-        rot_x = pyrr.Matrix44.from_x_rotation(0.5 * glfw.get_time() )
-        rot_y = pyrr.Matrix44.from_y_rotation(0.8 * glfw.get_time() )
-
-
-        # identity_mat = numpy.identity(4)
-        # rot_x = identity_mat
-        # rot_y = identity_mat
-        transform_mat = rot_x*rot_y
-        glUniformMatrix4fv(transform_loc, 1, GL_FALSE, transform_mat)
-
-        # ---------------create normalMatrix-----------------
-        modelView = numpy.matmul(transform_mat, view, model)
+        #----create normalMatrix-----
+        modelView = numpy.matmul(view, model)
         modelView33 = modelView[0:-1, 0:-1]
         normalMatrix = numpy.transpose(numpy.linalg.inv(modelView33))
-        # -----------------------------------------------------------
+        # -----------
         glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
 
         glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
+        #*******************************************************************************
 
+
+
+        #********************************EARTH******************************************
+        glBindTexture(GL_TEXTURE_2D, earth_tex)
+
+        revolution_speed = time * 0.2
+        rotation_speed = time * 2
+
+        # translation
+        model = matrix44.create_from_translation(pyrr.Vector3([10.0, 1.0, 0.0]))
+        revolution = matrix44.create_from_z_rotation(revolution_speed)
+        rotation = matrix44.create_from_z_rotation(rotation_speed)
+        # revolution about z axis
+        model = matrix44.multiply(model, revolution)
+        # rotation about own axis
+        model = matrix44.multiply(rotation, model)
+
+        glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
+
+        # ----create normalMatrix--
+        modelView = numpy.matmul(view, model)
+        modelView33 = modelView[0:-1, 0:-1]
+        normalMatrix = numpy.transpose(numpy.linalg.inv(modelView33))
+        # -----------------
+        glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
+
+        glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
+        theta = theta+0.1
 
         glfw.swap_buffers(window)
 
