@@ -78,9 +78,9 @@ def main():
     # view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -900.0]))
     # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
 
-    model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -4.0]))
-    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 60.0)
+    model = pyrr.matrix44.create_from_translation(pyrr.Vector3([10.0, 1.0, 0.0]))
+    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -20.0]))
+    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 100.0)
 
     # # ---------------create normalMatrix-----------------
     # modelView = numpy.matmul(view, model)
@@ -144,7 +144,6 @@ def main():
         glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
 
         glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
-        # glutWireSphere(2, 10, 10)
 
 
         glfw.swap_buffers(window)
