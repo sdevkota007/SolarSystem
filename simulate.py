@@ -63,7 +63,7 @@ def main():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     # load image
-    image = Image.open("objects/earth.jpg")
+    image = Image.open("objects/earth_scaled.jpg")
     flipped_image = image.transpose(Image.FLIP_TOP_BOTTOM)
     img_data = numpy.array(list(flipped_image.getdata()), numpy.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data)
@@ -74,13 +74,13 @@ def main():
     glClearColor(0.0, 0.4, 0.5, 1.0)
     glEnable(GL_DEPTH_TEST)
 
-    model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -900.0]))
-    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
-
     # model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-    # view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -4.0]))
-    # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 60.0)
+    # view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -900.0]))
+    # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
+
+    model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
+    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -10.0]))
+    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 60.0)
 
     # # ---------------create normalMatrix-----------------
     # modelView = numpy.matmul(view, model)
@@ -128,12 +128,12 @@ def main():
 
         rot_x = pyrr.Matrix44.from_x_rotation(0.5 * glfw.get_time() )
         rot_y = pyrr.Matrix44.from_y_rotation(0.8 * glfw.get_time() )
-
-
         # identity_mat = numpy.identity(4)
         # rot_x = identity_mat
         # rot_y = identity_mat
-        transform_mat = rot_x*rot_y
+
+        # transform_mat = rot_x*rot_y
+        transform_mat = pyrr.matrix44.create_from_scale(pyrr.Vector3([0.01, 0.01, 0.01]))
         glUniformMatrix4fv(transform_loc, 1, GL_FALSE, transform_mat)
 
         # ---------------create normalMatrix-----------------
