@@ -7,6 +7,7 @@ import pyrr
 from pyrr import matrix44, vector3
 import TextureLoader
 import math
+from OpenGLContext.scenegraph.basenodes import Sphere
 
 from PIL import Image
 from ObjLoader import *
@@ -33,7 +34,7 @@ def main():
     glfw.set_window_size_callback(window, window_resize)
 
     obj = ObjLoader()
-    obj.load_model("objects/cube.obj")
+    obj.load_model("objects/sphere.obj")
 
     texture_offset = len(obj.vertex_index)*12
     normal_offset = (texture_offset + len(obj.texture_index)*8)
@@ -68,9 +69,9 @@ def main():
 
 
 
-    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -20.0]))
+    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, -10.0, -60.0]))
     projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 100.0)
-
+    scale = pyrr.matrix44.create_from_scale(pyrr.Vector3([0.1, 0.1, 0.1]))
     # # ---------------create normalMatrix-----------------
     # modelView = numpy.matmul(view, model)
     # modelView33 = modelView[0:-1, 0:-1]
@@ -81,10 +82,11 @@ def main():
     proj_loc = glGetUniformLocation(shader, "projection")
     model_loc = glGetUniformLocation(shader, "model")
     normal_loc = glGetUniformLocation(shader, "normalMatrix")
+    scale_loc = glGetUniformLocation(shader, "scale")
 
     glUniformMatrix4fv(view_loc, 1, GL_FALSE, view)
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, projection)
-
+    glUniformMatrix4fv(scale_loc, 1, GL_FALSE, scale)
 
 
     Global_ambient_loc = glGetUniformLocation(shader, "Global_ambient")
@@ -137,13 +139,13 @@ def main():
         #********************************EARTH******************************************
         glBindTexture(GL_TEXTURE_2D, earth_tex)
 
-        revolution_speed = time * 0.2
+        revolution_speed = time * 0.8
         rotation_speed = time * 2
 
         # translation
         model = matrix44.create_from_translation(pyrr.Vector3([10.0, 1.0, 0.0]))
-        revolution = matrix44.create_from_z_rotation(revolution_speed)
-        rotation = matrix44.create_from_z_rotation(rotation_speed)
+        revolution = matrix44.create_from_y_rotation(revolution_speed)
+        rotation = matrix44.create_from_y_rotation(rotation_speed)
         # revolution about z axis
         model = matrix44.multiply(model, revolution)
         # rotation about own axis
