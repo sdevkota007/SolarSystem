@@ -30,7 +30,7 @@ def main():
     glfw.set_window_size_callback(window, window_resize)
 
     obj = ObjLoader()
-    obj.load_model("objects/earth.obj")
+    obj.load_model("objects/saturn/saturn.obj")
 
     texture_offset = len(obj.vertex_index)*12
     normal_offset = (texture_offset + len(obj.texture_index)*8)
@@ -63,7 +63,7 @@ def main():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     # load image
-    image = Image.open("objects/earth_scaled.jpg")
+    image = Image.open("objects/saturn/saturn.jpg")
     flipped_image = image.transpose(Image.FLIP_TOP_BOTTOM)
     img_data = numpy.array(list(flipped_image.getdata()), numpy.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data)
@@ -79,8 +79,8 @@ def main():
     # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
 
     model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -10.0]))
-    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 60.0)
+    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -100.0]))
+    projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 600.0)
 
     # # ---------------create normalMatrix-----------------
     # modelView = numpy.matmul(view, model)
