@@ -110,6 +110,7 @@ def main():
 
     sun_tex = TextureLoader.load_texture("objects/sun/sun.jpg")
     earth_tex = TextureLoader.load_texture("objects/earth/earth.jpg")
+    mercury_tex = TextureLoader.load_texture("objects/mercury/mercury.jpg")
 
     glEnable(GL_TEXTURE_2D)
     glUseProgram(shader)
@@ -175,11 +176,11 @@ def main():
         #************************************SUN****************************************
         glBindTexture(GL_TEXTURE_2D, sun_tex)
         # scale down planet
-        scale_down = matrix44.create_from_scale(pyrr.Vector3([1.0, 1.0, 1.0]))
+        scale_down = matrix44.create_from_scale(pyrr.Vector3([1.5, 1.5, 1.5]))
         glUniformMatrix4fv(scale_down_loc, 1, GL_FALSE, scale_down)
         # rotation
         rotation_speed = time * 0.002
-        model_pos = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 1.0, 0.0]))
+        model_pos = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
         rot_x = matrix44.create_from_y_rotation(rotation_speed)
         model = matrix44.multiply(rot_x, model_pos)
         glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
@@ -206,7 +207,7 @@ def main():
         glUniformMatrix4fv(scale_down_loc, 1, GL_FALSE, scale_down)
 
         # translation
-        model = matrix44.create_from_translation(pyrr.Vector3([10.0, 1.0, 0.0]))
+        model = matrix44.create_from_translation(pyrr.Vector3([10.0, 0.0, 0.0]))
         revolution = matrix44.create_from_y_rotation(revolution_speed)
         rotation = matrix44.create_from_y_rotation(rotation_speed)
         # revolution about z axis
@@ -225,6 +226,39 @@ def main():
 
         glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
         theta = theta+0.1
+
+        # ********************************Mercury******************************************
+        glBindTexture(GL_TEXTURE_2D, mercury_tex)
+
+        revolution_speed = time * 0.4
+        rotation_speed = time * 1.5
+        # scale down planet
+        scale_down = matrix44.create_from_scale(pyrr.Vector3([0.07, 0.07, 0.07]))
+        glUniformMatrix4fv(scale_down_loc, 1, GL_FALSE, scale_down)
+
+        # translation
+        model = matrix44.create_from_translation(pyrr.Vector3([5.0, 0.0, 5.0]))
+        revolution = matrix44.create_from_y_rotation(revolution_speed)
+        rotation = matrix44.create_from_y_rotation(rotation_speed)
+        # revolution about z axis
+        model = matrix44.multiply(model, revolution)
+        # rotation about own axis
+        model = matrix44.multiply(rotation, model)
+
+        glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
+
+        # ----create normalMatrix--
+        modelView = numpy.matmul(view, model)
+        modelView33 = modelView[0:-1, 0:-1]
+        normalMatrix = numpy.transpose(numpy.linalg.inv(modelView33))
+        # -----------------
+        glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
+
+        glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
+        theta = theta + 0.1
+
+
+
 
         glfw.swap_buffers(window)
 
