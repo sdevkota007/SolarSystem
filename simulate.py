@@ -115,23 +115,15 @@ def main():
         planets[planet]['texture'] = texture
 
         #initial position
-        distance_from_sun = planets[planet]['distance_from_sun']
         if planet == 'sun':
+            distance_from_sun = planets[planet]['distance_from_sun']
             planets[planet]['initial_position'] = [distance_from_sun, 0.0, distance_from_sun]
         else:
+            distance_from_sun = 30.0 + planets[planet]['distance_from_sun']
             x = round(random.uniform(-distance_from_sun, distance_from_sun), 3)
             z = round(math.sqrt((distance_from_sun ** 2) - (x ** 2)), 3)
             planets[planet]['initial_position'] = [x, 0.0, z]
 
-        # sun_tex = TextureLoader.load_texture("objects/sun/sun.jpg")
-        # earth_tex = TextureLoader.load_texture("objects/earth/earth.jpg")
-        # mercury_tex = TextureLoader.load_texture("objects/mercury/mercury.jpg")
-        # venus_tex = TextureLoader.load_texture("objects/venus/venus.jpg")
-        # mars_tex = TextureLoader.load_texture("objects/mars/mars.jpg")
-        # jupiter_tex = TextureLoader.load_texture("objects/jupiter/jupiter.jpg")
-        # saturn_tex = TextureLoader.load_texture("objects/saturn/saturn.jpg")
-        # uranus_tex = TextureLoader.load_texture("objects/uranus/uranus.jpg")
-        # neptune_tex = TextureLoader.load_texture("objects/neptune/neptune.jpg")
 
     glEnable(GL_TEXTURE_2D)
     glUseProgram(shader)
@@ -174,7 +166,7 @@ def main():
     glUniform4f(Light_ambient_loc, 0.3, 0.3, 0.3, 1.0)
     glUniform4f(Light_diffuse_loc, 0.25, 0.25, 0.25, 1.0)
     glUniform4f(Light_specular_loc, 0.9, 0.9, 0.9, 1.0)
-    glUniform3f(Light_location_loc, 0, 5, 8)
+    glUniform3f(Light_location_loc, 0, 0, 0)
     glUniform4f(Material_ambient_loc, 0.4, 0.4, 0.4, 1.0)
     glUniform4f(Material_diffuse_loc, 0.15, 0.15, 0.15, 1.0)
     glUniform4f(Material_specular_loc, 1.0, 1.0, 1.0, 1.0)
