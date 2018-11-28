@@ -1,5 +1,3 @@
-# planets = ['sun', 'earth', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']
-
 planets = {
     'sun': {
                 'image_path':'objects/sun/sun.jpg',
@@ -73,7 +71,15 @@ planets = {
                 'size_ratio_relative_to_earth':3.88,
                 'rotation_ratio_relative_to_earth': 0.002,
                 'revolution_ratio_relative_to_earth': 0.1,
-                'distance_from_sun':2793,
+                'distance_from_sun':2193,
+                },
+    'stars': {
+                'image_path':'objects/StarsMap.jpg',
+                'texture':'',
+                'size_ratio_relative_to_earth':2000,
+                'rotation_ratio_relative_to_earth': 0.0,
+                'revolution_ratio_relative_to_earth': 0.0,
+                'distance_from_sun':0,
                 }
             }
 

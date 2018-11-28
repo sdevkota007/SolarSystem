@@ -33,13 +33,13 @@ def key_callback(window, key, scancode, action, mode):
 
 def do_movement():
     if keys[glfw.KEY_W]:
-        cam.process_keyboard("FORWARD", 0.5)
+        cam.process_keyboard("FORWARD", 5)
     if keys[glfw.KEY_S]:
-        cam.process_keyboard("BACKWARD", 0.5)
+        cam.process_keyboard("BACKWARD", 5)
     if keys[glfw.KEY_A]:
-        cam.process_keyboard("LEFT", 0.5)
+        cam.process_keyboard("LEFT", 5)
     if keys[glfw.KEY_D]:
-        cam.process_keyboard("RIGHT", 0.5)
+        cam.process_keyboard("RIGHT", 5)
 
 
 def mouse_callback(window, xpos, ypos):
@@ -90,7 +90,7 @@ def main():
     texture_offset = len(obj.vertex_index)*12
     normal_offset = (texture_offset + len(obj.texture_index)*8)
 
-    shader = ShaderLoader.compile_shader("shaders/cruise_with_lighting.vs", "shaders/cruise_with_lighting.fs")
+    shader = ShaderLoader.compile_shader("shaders/main_vert.vs", "shaders/main_frag.fs")
 
     VBO = glGenBuffers(1)
     glBindBuffer(GL_ARRAY_BUFFER, VBO)
@@ -115,7 +115,7 @@ def main():
         planets[planet]['texture'] = texture
 
         #initial position
-        if planet == 'sun':
+        if planet == 'sun' or planet == 'stars':
             distance_from_sun = planets[planet]['distance_from_sun']
             planets[planet]['initial_position'] = [distance_from_sun, 0.0, distance_from_sun]
         else:
@@ -206,8 +206,8 @@ def main():
 
             # ----create normalMatrix--
             modelView = numpy.matmul(view, model)
-            modelView = numpy.matmul(modelView, scale_planet)
-            modelView = numpy.matmul(modelView, scale)
+            # modelView = numpy.matmul(modelView, scale_planet)
+            # modelView = numpy.matmul(modelView, scale)
             modelView33 = modelView[0:-1, 0:-1]
             normalMatrix = numpy.transpose(numpy.linalg.inv(modelView33))
             # -----------------
