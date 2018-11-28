@@ -126,6 +126,7 @@ def main():
 
 
     glEnable(GL_TEXTURE_2D)
+
     glUseProgram(shader)
 
     glClearColor(0.0, 0.2, 0.2, 1.0)
