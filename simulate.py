@@ -137,11 +137,7 @@ def main():
 
     projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 10000.0)
     scale = pyrr.matrix44.create_from_scale(pyrr.Vector3([0.1, 0.1, 0.1]))
-    # # ---------------create normalMatrix-----------------
-    # modelView = numpy.matmul(view, model)
-    # modelView33 = modelView[0:-1, 0:-1]
-    # normalMatrix = numpy.transpose(numpy.linalg.inv(modelView33))
-    # #-----------------------------------------------------------
+
 
     view_loc = glGetUniformLocation(shader, "view")
     proj_loc = glGetUniformLocation(shader, "projection")
