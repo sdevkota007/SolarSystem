@@ -33,11 +33,11 @@ def key_callback(window, key, scancode, action, mode):
 
 def do_movement():
     if keys[glfw.KEY_W]:
-        cam.process_keyboard("FORWARD", 5)
+        cam.process_keyboard("FORWARD", 1)
     if keys[glfw.KEY_S]:
-        cam.process_keyboard("BACKWARD", 5)
+        cam.process_keyboard("BACKWARD", 1)
     if keys[glfw.KEY_A]:
-        cam.process_keyboard("LEFT", 5)
+        cam.process_keyboard("LEFT", 1)
     if keys[glfw.KEY_D]:
         cam.process_keyboard("RIGHT", 5)
 
@@ -69,7 +69,7 @@ def main():
     if not glfw.init():
         return
 
-    w_width, w_height = 1280, 720
+    w_width, w_height = 800, 600
     aspect_ratio = w_width / w_height
 
 
@@ -164,6 +164,13 @@ def main():
     Material_diffuse_loc = glGetUniformLocation(shader, "Material_diffuse")
     Material_specular_loc = glGetUniformLocation(shader, "Material_specular")
     Material_shininess_loc = glGetUniformLocation(shader, "Material_shininess")
+
+
+    glUniform4f(Global_ambient_loc, 0.8, 0.8, 0.9, 0.1)
+    glUniform4f(Light_ambient_loc, 0.3, 0.3, 0.3, 1.0)
+    glUniform4f(Light_diffuse_loc, 0.25, 0.25, 0.25, 1.0)
+    glUniform4f(Light_specular_loc, 0.9, 0.9, 0.9, 1.0)
+    glUniform3f(Light_location_loc, 0, 0, 0)
 
 
 
@@ -269,16 +276,7 @@ def main():
             # -----------------
             glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
 
-            a,b,c,d = planets[planet]['Global_ambient']
-            glUniform4f(Global_ambient_loc, a,b,c,d)
-            a,b,c,d = planets[planet]['Light_ambient']
-            glUniform4f(Light_ambient_loc, a,b,c,d)
-            a,b,c,d = planets[planet]['Light_diffuse']
-            glUniform4f(Light_diffuse_loc, a,b,c,d)
-            a,b,c,d = planets[planet]['Light_specular']
-            glUniform4f(Light_specular_loc, a,b,c,d)
-            x,y,z = planets[planet]['Light_location']
-            glUniform3f(Light_location_loc, x,y,z)
+
             a,b,c,d = planets[planet]['Material_ambient']
             glUniform4f(Material_ambient_loc, a,b,c,d)
             a,b,c,d = planets[planet]['Material_diffuse']
