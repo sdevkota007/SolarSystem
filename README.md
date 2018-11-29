@@ -20,3 +20,7 @@ Finally, To run the simulation:
 ```bash
 $ python simulate.py
 ```
+
+![html dark](https://github.com/sdevkota007/SolarSystem/blob/master/screenshots/SolarSystem1.png)
+![html dark](https://github.com/sdevkota007/SolarSystem/blob/master/screenshots/SolarSystem2.png)
+![html dark](https://github.com/sdevkota007/SolarSystem/blob/master/screenshots/SolarSystem3.png)

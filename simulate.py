@@ -39,7 +39,7 @@ def do_movement():
     if keys[glfw.KEY_A]:
         cam.process_keyboard("LEFT", 1)
     if keys[glfw.KEY_D]:
-        cam.process_keyboard("RIGHT", 5)
+        cam.process_keyboard("RIGHT", 1)
 
 
 def mouse_callback(window, xpos, ypos):
