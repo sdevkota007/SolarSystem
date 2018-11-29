@@ -30,32 +30,61 @@ def main():
     glfw.set_window_size_callback(window, window_resize)
 
     obj = ObjLoader()
-    obj.load_model("objects/saturn/saturn.obj")
+    obj.load_model("objects/sphere.obj")
+
+    obj2 = ObjLoader()
+    obj2.load_model("objects/sphere.obj")
 
     texture_offset = len(obj.vertex_index)*12
     normal_offset = (texture_offset + len(obj.texture_index)*8)
 
     shader = ShaderLoader.compile_shader("shaders/cruise_with_lighting.vs", "shaders/cruise_with_lighting.fs")
+    shader2 = ShaderLoader.compile_shader("shaders/vert.vs", "shaders/frag.fs")
 
     VBO = glGenBuffers(1)
     glBindBuffer(GL_ARRAY_BUFFER, VBO)
     glBufferData(GL_ARRAY_BUFFER, obj.model.itemsize * len(obj.model), obj.model, GL_STATIC_DRAW)
 
-    #positions
+    VBO2 = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2)
+    glBufferData(GL_ARRAY_BUFFER, obj2.model.itemsize * len(obj2.model), obj2.model, GL_STATIC_DRAW)
+
+    # positions
     position = glGetAttribLocation(shader, "position")
     glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, obj.model.itemsize * 3, ctypes.c_void_p(0))
     glEnableVertexAttribArray(0)
-    #textures
+    # textures
     texCoords = glGetAttribLocation(shader, "inTexCoords")
     glVertexAttribPointer(texCoords, 2, GL_FLOAT, GL_FALSE, obj.model.itemsize * 2, ctypes.c_void_p(texture_offset))
     glEnableVertexAttribArray(texCoords)
-    #normals
+    # normals
     normals = glGetAttribLocation(shader, "vertNormal")
     glVertexAttribPointer(normals, 3, GL_FLOAT, GL_FALSE, obj.model.itemsize * 3, ctypes.c_void_p(normal_offset))
     glEnableVertexAttribArray(normals)
 
+
+
+    #positions
+    position2 = glGetAttribLocation(shader2, "position")
+    glVertexAttribPointer(position2, 3, GL_FLOAT, GL_FALSE, obj2.model.itemsize * 3, ctypes.c_void_p(0))
+    glEnableVertexAttribArray(0)
+    #textures
+    texCoords2 = glGetAttribLocation(shader2, "inTexCoords")
+    glVertexAttribPointer(texCoords2, 2, GL_FLOAT, GL_FALSE, obj2.model.itemsize * 2, ctypes.c_void_p(texture_offset))
+    glEnableVertexAttribArray(texCoords)
+    #normals
+    normals2 = glGetAttribLocation(shader2, "vertNormal")
+    glVertexAttribPointer(normals2, 3, GL_FLOAT, GL_FALSE, obj2.model.itemsize * 3, ctypes.c_void_p(normal_offset))
+    glEnableVertexAttribArray(normals)
+
+
     texture = glGenTextures(1)
+    texture2 = glGenTextures(1)
+
+
     glBindTexture(GL_TEXTURE_2D, texture)
+    glBindTexture(GL_TEXTURE_2D, texture2)
+
     # Set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
@@ -64,12 +93,19 @@ def main():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     # load image
     image = Image.open("objects/saturn/saturn.jpg")
+    image2= Image.open("objects/earth.jpg")
+
     flipped_image = image.transpose(Image.FLIP_TOP_BOTTOM)
+    flipped_image2 = image2.transpose(Image.FLIP_TOP_BOTTOM)
+
     img_data = numpy.array(list(flipped_image.getdata()), numpy.uint8)
+    img_data2 = numpy.array(list(flipped_image2.getdata()), numpy.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image2.width, image2.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data2)
     glEnable(GL_TEXTURE_2D)
 
     glUseProgram(shader)
+    glUseProgram(shader2)
 
     glClearColor(0.0, 0.4, 0.5, 1.0)
     glEnable(GL_DEPTH_TEST)
@@ -79,7 +115,7 @@ def main():
     # projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 1000.0)
 
     model = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
-    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -100.0]))
+    view = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, -5.0]))
     projection = pyrr.matrix44.create_perspective_projection_matrix(65.0, w_width / w_height, 0.1, 600.0)
 
     # # ---------------create normalMatrix-----------------
@@ -144,7 +180,31 @@ def main():
         glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
 
         glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
-        # glutWireSphere(2, 10, 10)
+        glDrawArrays(GL_TRIANGLES, 0, len(obj2.vertex_index))
+
+        # glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        rot_x = pyrr.Matrix44.from_x_rotation(0.5 * glfw.get_time())
+        rot_y = pyrr.Matrix44.from_y_rotation(0.8 * glfw.get_time())
+        # identity_mat = numpy.identity(4)
+        # rot_x = identity_mat
+        # rot_y = identity_mat
+
+        transform_mat = rot_x*rot_y
+        # transform_mat = pyrr.matrix44.create_from_scale(pyrr.Vector3([0.01, 0.01, 0.01]))
+        glUniformMatrix4fv(transform_loc, 1, GL_FALSE, transform_mat)
+
+        # ---------------create normalMatrix-----------------
+        modelView = numpy.matmul(transform_mat, view, model)
+        modelView33 = modelView[0:-1, 0:-1]
+        normalMatrix = numpy.transpose(numpy.linalg.inv(modelView33))
+        # -----------------------------------------------------------
+        glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
+
+        glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
+        glDrawArrays(GL_TRIANGLES, 0, len(obj2.vertex_index))
+
+
 
 
         glfw.swap_buffers(window)
