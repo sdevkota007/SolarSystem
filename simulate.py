@@ -7,7 +7,6 @@ import pyrr
 
 from PIL import Image
 from ObjLoader import *
-
 def window_resize(window, width, height):
     glViewport(0, 0, width, height)
 
