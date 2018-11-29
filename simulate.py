@@ -96,10 +96,11 @@ def main():
     glBindBuffer(GL_ARRAY_BUFFER, VBO)
     glBufferData(GL_ARRAY_BUFFER, obj.model.itemsize * len(obj.model), obj.model, GL_STATIC_DRAW)
 
+
     #positions
     position = glGetAttribLocation(shader, "position")
     glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, obj.model.itemsize * 3, ctypes.c_void_p(0))
-    glEnableVertexAttribArray(0)
+    glEnableVertexAttribArray(position)
     #textures
     texCoords = glGetAttribLocation(shader, "inTexCoords")
     glVertexAttribPointer(texCoords, 2, GL_FLOAT, GL_FALSE, obj.model.itemsize * 2, ctypes.c_void_p(texture_offset))
@@ -108,6 +109,7 @@ def main():
     normals = glGetAttribLocation(shader, "vertNormal")
     glVertexAttribPointer(normals, 3, GL_FLOAT, GL_FALSE, obj.model.itemsize * 3, ctypes.c_void_p(normal_offset))
     glEnableVertexAttribArray(normals)
+
 
 
     for planet in planets:
@@ -163,15 +165,65 @@ def main():
     Material_specular_loc = glGetUniformLocation(shader, "Material_specular")
     Material_shininess_loc = glGetUniformLocation(shader, "Material_shininess")
 
-    glUniform4f(Global_ambient_loc, 0.8, 0.8, 0.9, 0.1)
-    glUniform4f(Light_ambient_loc, 0.3, 0.3, 0.3, 1.0)
-    glUniform4f(Light_diffuse_loc, 0.25, 0.25, 0.25, 1.0)
-    glUniform4f(Light_specular_loc, 0.9, 0.9, 0.9, 1.0)
-    glUniform3f(Light_location_loc, 0, 0, 0)
-    glUniform4f(Material_ambient_loc, 0.4, 0.4, 0.4, 1.0)
-    glUniform4f(Material_diffuse_loc, 0.15, 0.15, 0.15, 1.0)
-    glUniform4f(Material_specular_loc, 1.0, 1.0, 1.0, 1.0)
-    glUniform1f(Material_shininess_loc, .95)
+
+
+
+
+
+    # *******************************************************************************************
+
+    # obj2 = ObjLoader()
+    # obj2.load_model("objects/cruiser.obj")
+    #
+    # shader2 = ShaderLoader.compile_shader("shaders/vert.vs", "shaders/frag.fs")
+    #
+    # VBO2 = glGenBuffers(1)
+    # glBindBuffer(GL_ARRAY_BUFFER, VBO2)
+    # glBufferData(GL_ARRAY_BUFFER, obj2.model.itemsize * len(obj2.model), obj2.model, GL_STATIC_DRAW)
+    #
+    # # positions
+    # position2 = glGetAttribLocation(shader, "position")
+    # glVertexAttribPointer(position2, 3, GL_FLOAT, GL_FALSE, obj2.model.itemsize * 3, ctypes.c_void_p(0))
+    # glEnableVertexAttribArray(position2)
+    # # textures
+    # texCoords2 = glGetAttribLocation(shader2, "inTexCoords")
+    # glVertexAttribPointer(texCoords2, 2, GL_FLOAT, GL_FALSE, obj2.model.itemsize * 2, ctypes.c_void_p(texture_offset))
+    # glEnableVertexAttribArray(texCoords2)
+    # # normals
+    # normals2 = glGetAttribLocation(shader2, "vertNormal")
+    # glVertexAttribPointer(normals2, 3, GL_FLOAT, GL_FALSE, obj2.model.itemsize * 3, ctypes.c_void_p(normal_offset))
+    # glEnableVertexAttribArray(normals2)
+    #
+    #
+    # texture2 = TextureLoader.load_texture(planets['cruiser']['image_path'])
+    # distance_from_sun = planets['cruiser']['distance_from_sun']
+    # planets['cruiser']['initial_position'] = [distance_from_sun, 0.0, distance_from_sun]
+    #
+    # glUseProgram(shader2)
+    #
+    #
+    # Global_ambient_loc = glGetUniformLocation(shader, "Global_ambient")
+    # Light_ambient_loc = glGetUniformLocation(shader, "Light_ambient")
+    # Light_diffuse_loc = glGetUniformLocation(shader, "Light_diffuse")
+    # Light_specular_loc = glGetUniformLocation(shader, "Light_specular")
+    # Light_location_loc = glGetUniformLocation(shader, "Light_location")
+    # Material_ambient_loc = glGetUniformLocation(shader, "Material_ambient")
+    # Material_diffuse_loc = glGetUniformLocation(shader, "Material_diffuse")
+    # Material_specular_loc = glGetUniformLocation(shader, "Material_specular")
+    # Material_shininess_loc = glGetUniformLocation(shader, "Material_shininess")
+    #
+    # glUniform4f(Global_ambient_loc, 0.8, 0.8, 0.9, 0.1)
+    # glUniform4f(Light_ambient_loc, 0.3, 0.3, 0.3, 1.0)
+    # glUniform4f(Light_diffuse_loc, 0.25, 0.25, 0.25, 1.0)
+    # glUniform4f(Light_specular_loc, 0.9, 0.9, 0.9, 1.0)
+    # glUniform3f(Light_location_loc, 0, 0, 0)
+    # glUniform4f(Material_ambient_loc, 0.4, 0.4, 0.4, 1.0)
+    # glUniform4f(Material_diffuse_loc, 0.15, 0.15, 0.15, 1.0)
+    # glUniform4f(Material_specular_loc, 1.0, 1.0, 1.0, 1.0)
+    # glUniform1f(Material_shininess_loc, .95)
+
+    # ******************************************************************************************
+
 
     while not glfw.window_should_close(window):
         glfw.poll_events()
@@ -185,7 +237,10 @@ def main():
 
         # **********************************planets****************************************
         for planet in planets:
-            glBindTexture(GL_TEXTURE_2D, planets[planet]['texture'])
+            if planet == 'cruiser':
+                glBindTexture(GL_TEXTURE_2D, texture2)
+            else:
+                glBindTexture(GL_TEXTURE_2D, planets[planet]['texture'])
 
             revolution_speed = time * planets[planet]['revolution_ratio_relative_to_earth']
             rotation_speed = time * planets[planet]['rotation_ratio_relative_to_earth']
@@ -214,12 +269,32 @@ def main():
             # -----------------
             glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normalMatrix)
 
-            glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
+            a,b,c,d = planets[planet]['Global_ambient']
+            glUniform4f(Global_ambient_loc, a,b,c,d)
+            a,b,c,d = planets[planet]['Light_ambient']
+            glUniform4f(Light_ambient_loc, a,b,c,d)
+            a,b,c,d = planets[planet]['Light_diffuse']
+            glUniform4f(Light_diffuse_loc, a,b,c,d)
+            a,b,c,d = planets[planet]['Light_specular']
+            glUniform4f(Light_specular_loc, a,b,c,d)
+            x,y,z = planets[planet]['Light_location']
+            glUniform3f(Light_location_loc, x,y,z)
+            a,b,c,d = planets[planet]['Material_ambient']
+            glUniform4f(Material_ambient_loc, a,b,c,d)
+            a,b,c,d = planets[planet]['Material_diffuse']
+            glUniform4f(Material_diffuse_loc, a,b,c,d)
+            a,b,c,d = planets[planet]['Material_specular']
+            glUniform4f(Material_specular_loc, a,b,c,d)
+            s = planets[planet]['Material_shininess'][0]
+            glUniform1f(Material_shininess_loc, s)
+
+
+            if planet == 'cruiser':
+                glDrawArrays(GL_TRIANGLES, 0, len(obj2.vertex_index))
+            else:
+                glDrawArrays(GL_TRIANGLES, 0, len(obj.vertex_index))
 
         # *******************************************************************************
-
-
-
 
 
 
